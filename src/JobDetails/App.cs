@@ -8,13 +8,16 @@ namespace JobDetails
     public class App
     {
         private readonly JobDetailsConfig config;
-        public App(JobDetailsConfig config)
+        private readonly IDataStore store;
+        public App(JobDetailsConfig config, IDataStore store)
         {
             this.config = config;
+            this.store = store;
         }
 
         public async ValueTask<Job> GetJob()
         {
+            store.JobExists(config.Source);
             var httpClient = new HttpClient();
             var results = await httpClient.GetAsync(config.Source);
 
