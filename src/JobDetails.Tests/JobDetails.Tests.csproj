@@ -13,8 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\HtmlReader\src\HtmlReader\HtmlReader.csproj" />
-    <ProjectReference Include="..\..\..\JsonReader\src\JsonReader\JsonReader.csproj" />
     <ProjectReference Include="..\JobDetails\JobDetails.csproj" />
   </ItemGroup>
 
