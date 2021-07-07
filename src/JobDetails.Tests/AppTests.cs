@@ -12,9 +12,9 @@ using System.IO;
 namespace JobDetails.Tests
 {
     public class Job {
-        public string Title { get; set; }
-        public string Company { get; set; }
-        public string Description { get; set; }
+        public readonly string Title;
+        public readonly string Company;
+        public readonly string Description;
 
         public Job(JsonReader.Reader reader, JobDetailsConfig config)
         {
