@@ -53,6 +53,28 @@ namespace JobDetails.Tests
 
     }
 
+        public class App {
+            private readonly JobDetailsConfig config;
+            public App(JobDetailsConfig config) {
+                this.config = config;
+            }
+
+            public async ValueTask<Job> GetJob() {
+                var httpClient = new HttpClient();
+                var results = await httpClient.GetAsync(config.Source);
+
+                Assert.AreEqual(HttpStatusCode.OK, results.StatusCode);
+
+                var html = await results.Content.ReadAsStringAsync();
+                var htmlReader = new HtmlReader.Reader(html);
+                var scriptTemplate = config.Job.ScriptTemplate;
+                var script = htmlReader.ParseScript(config.Job.Path, scriptTemplate);
+
+                var jsonReader = new JsonReader.Reader(script);
+                return new Job(jsonReader, config);
+            }
+        }
+
     public class TestConfig {
         public readonly string Title;
         public readonly string Company;
@@ -82,25 +104,10 @@ namespace JobDetails.Tests
             }
         }
 
-        private async ValueTask<Job> App() {
-            var httpClient = new HttpClient();
-            var results = await httpClient.GetAsync(config.Source);
-
-            Assert.AreEqual(HttpStatusCode.OK, results.StatusCode);
-
-            var html = await results.Content.ReadAsStringAsync();
-            var htmlReader = new HtmlReader.Reader(html);
-            var scriptTemplate = config.Job.ScriptTemplate;
-            var script = htmlReader.ParseScript(config.Job.Path, scriptTemplate);
-
-            var jsonReader = new JsonReader.Reader(script);
-            return new Job(jsonReader, config);
-        }
-
         [Test]
         public async Task ShouldGetJobDetails()
         {
-            var job = await App();
+            var job = await new App(config).GetJob();
 
             Assert.AreEqual(testConfig.Title, job.Title);
             Assert.AreEqual(testConfig.Company, job.Company);
