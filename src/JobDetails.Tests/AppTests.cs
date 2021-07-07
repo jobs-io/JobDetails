@@ -1,11 +1,7 @@
-// using System;
 using NUnit.Framework;
 using System.Threading.Tasks;
-// using System.Text.Json;
 using System.IO;
 using JobDetails.Config;
-// using HtmlReader;
-// using JsonReader;
 
 namespace JobDetails.Tests
 {
