@@ -1,6 +1,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using JobDetails.Config;
+using JobDetails.Core;
 using JobDetails.Data;
 
 namespace JobDetails
@@ -9,8 +10,10 @@ namespace JobDetails
     {
         private readonly JobDetailsConfig config;
         private readonly IDataStore store;
-        public App(JobDetailsConfig config, IDataStore store)
+        private readonly IHttpClient httpClient;
+        public App(JobDetailsConfig config, IDataStore store, IHttpClient httpClient)
         {
+            this.httpClient = httpClient;
             this.config = config;
             this.store = store;
         }
@@ -18,7 +21,6 @@ namespace JobDetails
         public async ValueTask<Job> GetJob()
         {
             store.JobExists(config.Source);
-            var httpClient = new HttpClient();
             var results = await httpClient.GetAsync(config.Source);
 
             var html = await results.Content.ReadAsStringAsync();

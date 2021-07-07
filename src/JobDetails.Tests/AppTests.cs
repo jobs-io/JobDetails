@@ -4,6 +4,7 @@ using System.IO;
 using JobDetails.Config;
 using JobDetails.Data;
 using Moq;
+using JobDetails.Core;
 
 namespace JobDetails.Tests
 {
@@ -19,6 +20,14 @@ namespace JobDetails.Tests
             Title = jsonReader.GetString(new string[] { "title" });
             Company = jsonReader.GetString(new string[] { "company" });
             Description = jsonReader.GetString(new string[] { "description" });
+        }
+    }
+
+    public class HttpClient : IHttpClient
+    {
+        public Task<System.Net.Http.HttpResponseMessage> GetAsync(string requestUri)
+        {
+            return new System.Net.Http.HttpClient().GetAsync(requestUri);
         }
     }
 
@@ -45,7 +54,7 @@ namespace JobDetails.Tests
         [Test]
         public async Task ShouldGetJobDetails()
         {
-            var job = await new App(config, dataStoreMock.Object).GetJob();
+            var job = await new App(config, dataStoreMock.Object, new HttpClient()).GetJob();
 
             Assert.AreEqual(testConfig.Title, job.Title);
             Assert.AreEqual(testConfig.Company, job.Company);
@@ -57,7 +66,7 @@ namespace JobDetails.Tests
         public async Task ShouldCreateJobIfItDoesNotExist() {
             this.dataStoreMock.Setup(x => x.JobExists(config.Source)).Returns(false);
 
-            var job = await new App(config, dataStoreMock.Object).GetJob();
+            var job = await new App(config, dataStoreMock.Object, new HttpClient()).GetJob();
 
             this.dataStoreMock.Verify(x => x.JobExists(config.Source));
             // Assert.AreEqual(testConfig.Title, job.Title);
