@@ -46,6 +46,7 @@ namespace JobDetails.Tests
             Assert.AreEqual(testConfig.Title, job.Title);
             Assert.AreEqual(testConfig.Company, job.Company);
             Assert.AreEqual(testConfig.Description, job.Description);
+            Assert.AreEqual(config.Source, job.Source);
         }
     }
 }

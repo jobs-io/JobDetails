@@ -7,12 +7,14 @@ namespace JobDetails.Data
         public readonly string Title;
         public readonly string Company;
         public readonly string Description;
+        public readonly string Source;
 
         public Job(JsonReader.Reader reader, JobDetailsConfig config)
         {
             Title = reader.GetString(config.Job.Title);
             Company = reader.GetString(config.Job.Company);
             Description = reader.GetString(config.Job.Description);
+            Source = config.Source;
         }
     }
 }
