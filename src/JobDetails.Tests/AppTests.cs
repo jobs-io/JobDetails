@@ -1,25 +1,37 @@
-using System;
+// using System;
 using NUnit.Framework;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using JsonReader;
-using System.Text.Json;
+// using System.Text.Json;
 using System.IO;
 // using HtmlReader;
 // using JsonReader;
 
 namespace JobDetails.Tests
 {
-
     public class Job {
+        public string Title { get; set; }
+        public string Company { get; set; }
+        public string Description { get; set; }
+
+        public Job(JsonReader.Reader reader, JobDetailsConfig config)
+        {
+            Title = reader.GetString(config.Job.Title);
+            Company = reader.GetString(config.Job.Company);
+            Description = reader.GetString(config.Job.Description);
+        }
+    }
+
+    public class JobConfig {
         public readonly string ScriptTemplate;
         public readonly string Path;
         public readonly string[] Title;
         public readonly string[] Company;
         public readonly string[] Description;
 
-        public Job(JsonReader.Reader reader) {
+        public JobConfig(JsonReader.Reader reader) {
             this.ScriptTemplate = reader.GetString(new string[] { "job", "scriptTemplate" });
             this.Path = reader.GetString(new string[] {"job", "path"});
             this.Title = reader.GetItems<string>(new string[] {"job", "title"}, new MapStringValue());
@@ -28,23 +40,15 @@ namespace JobDetails.Tests
         }
     }
 
-    public class JobMapper : IMapValue<Job>
-    {
-        public Job Map(JsonElement jsonElement)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     public class JobDetailsConfig {
         public readonly string Source;
-        public readonly Job Job;
+        public readonly JobConfig Job;
 
         public JobDetailsConfig(string json)
         {
             var jsonReader = new JsonReader.Reader(json);
             this.Source = jsonReader.GetString(new string[] {"source"});
-            this.Job = new Job(jsonReader);
+            this.Job = new JobConfig(jsonReader);
         }
 
     }
@@ -78,11 +82,8 @@ namespace JobDetails.Tests
             }
         }
 
-        [Test]
-        public async Task ShouldGetJobDetails()
-        {
+        private async ValueTask<Job> App() {
             var httpClient = new HttpClient();
-
             var results = await httpClient.GetAsync(config.Source);
 
             Assert.AreEqual(HttpStatusCode.OK, results.StatusCode);
@@ -93,10 +94,17 @@ namespace JobDetails.Tests
             var script = htmlReader.ParseScript(config.Job.Path, scriptTemplate);
 
             var jsonReader = new JsonReader.Reader(script);
-            
-            Assert.AreEqual(testConfig.Title, jsonReader.GetString(config.Job.Title));
-            Assert.AreEqual(testConfig.Company, jsonReader.GetString(config.Job.Company));
-            Assert.AreEqual(testConfig.Description, jsonReader.GetString(config.Job.Description));
+            return new Job(jsonReader, config);
+        }
+
+        [Test]
+        public async Task ShouldGetJobDetails()
+        {
+            var job = await App();
+
+            Assert.AreEqual(testConfig.Title, job.Title);
+            Assert.AreEqual(testConfig.Company, job.Company);
+            Assert.AreEqual(testConfig.Description, job.Description);
         }
     }
 }
