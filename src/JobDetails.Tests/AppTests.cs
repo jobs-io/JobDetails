@@ -16,11 +16,13 @@ namespace JobDetails.Tests
         public readonly string ScriptTemplate;
         public readonly string Path;
         public readonly string[] Title;
+        public readonly string[] Company;
 
         public Job(JsonReader.Reader reader) {
             this.ScriptTemplate = reader.GetString(new string[] { "job", "scriptTemplate" });
             this.Path = reader.GetString(new string[] {"job", "path"});
             this.Title = reader.GetItems<string>(new string[] {"job", "title"}, new MapStringValue());
+            this.Company = reader.GetItems<string>(new string[] {"job", "company"}, new MapStringValue());
         }
     }
 
@@ -47,10 +49,12 @@ namespace JobDetails.Tests
 
     public class TestConfig {
         public readonly string Title;
+        public readonly string Company;
 
         public TestConfig(string json) {
             var jsonReader = new JsonReader.Reader(json);
             Title =  jsonReader.GetString(new string[] {"title"});
+            Company =  jsonReader.GetString(new string[] {"company"});
         }
     }
 
@@ -87,6 +91,7 @@ namespace JobDetails.Tests
             var jsonReader = new JsonReader.Reader(script);
             
             Assert.AreEqual(testConfig.Title, jsonReader.GetString(config.Job.Title));
+            Assert.AreEqual(testConfig.Company, jsonReader.GetString(config.Job.Company));
         }
     }
 }
