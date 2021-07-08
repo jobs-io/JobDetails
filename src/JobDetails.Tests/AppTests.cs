@@ -83,12 +83,9 @@ namespace JobDetails.Tests
         [Test]
         public async Task ShouldGetJobIfItDoesExist() {
             var httpClientMock = new Mock<IHttpClient>();
-            var response = new HttpResponseMessage() {StatusCode = System.Net.HttpStatusCode.OK, Content = new StringContent(testConfig.Content) };
-            httpClientMock.Setup(x => x.GetAsync(config.Source)).Returns(Task.FromResult(response));
+            httpClientMock.Setup(x => x.GetAsync(config.Source));
             this.dataStoreMock.Setup(x => x.JobExists(config.Source)).Returns(true);
-            var j = new Dictionary<string, string>();
-            j.Add(config.Source, testConfig.Content);
-            this.dataStoreMock.Setup(x => x.GetJob(config.Source)).Returns(j);
+            this.dataStoreMock.Setup(x => x.GetJob(config.Source)).Returns(new Dictionary<string, string>() { { config.Source, testConfig.Content } });
             this.dataStoreMock.Setup(x => x.CreateJob(config.Source, testConfig.Content));
 
             var job = await new App(config, dataStoreMock.Object, httpClientMock.Object).GetJob();
