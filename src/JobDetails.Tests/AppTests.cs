@@ -89,11 +89,15 @@ namespace JobDetails.Tests
             var j = new Dictionary<string, string>();
             j.Add(config.Source, testConfig.Content);
             this.dataStoreMock.Setup(x => x.GetJob(config.Source)).Returns(j);
+            this.dataStoreMock.Setup(x => x.CreateJob(config.Source, testConfig.Content));
 
             var job = await new App(config, dataStoreMock.Object, httpClientMock.Object).GetJob();
 
             this.dataStoreMock.Verify(x => x.JobExists(config.Source));
             this.dataStoreMock.Verify(x => x.GetJob(config.Source));
+            this.dataStoreMock.Verify(x => x.CreateJob(config.Source, testConfig.Content), Times.Never());
+            httpClientMock.Verify(x => x.GetAsync(config.Source), Times.Never());
+            Assert.AreEqual(testConfig.Title, job.Title);
         }
     }
 }
