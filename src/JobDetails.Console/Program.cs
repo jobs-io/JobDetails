@@ -34,9 +34,11 @@ namespace JobDetails.Console
 
     public class DataStore : IDataStore {
         private readonly IDictionary<string, string> JobDetails;
+        private readonly string Path;
     
         public DataStore(string path)
         {
+            this.Path = path;
             this.JobDetails = JsonConvert.DeserializeObject<IDictionary<string, string>>(File.ReadAllText(path));
         }
 
@@ -46,6 +48,7 @@ namespace JobDetails.Console
          }
          public void CreateJob(string key, string value) {
              this.JobDetails.Add(key, value);
+             File.WriteAllText(this.Path, JsonConvert.SerializeObject(this.JobDetails));
          }
          public bool JobExists(string key) {
              return this.JobDetails.ContainsKey(key);
@@ -55,7 +58,7 @@ namespace JobDetails.Console
 
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             var config = new Config(args);
 
@@ -68,7 +71,11 @@ namespace JobDetails.Console
 
             var appConfig = File.ReadAllText(config.AppConfigPath);
             System.Console.WriteLine(appConfig);
-            new App(new JobDetailsConfig(appConfig.Replace("{source}", config.Source)), new DataStore(config.JobDetailsPath), new HttpClient());
+            var app = new App(new JobDetailsConfig(appConfig.Replace("{source}", config.Source)), new DataStore(config.JobDetailsPath), new HttpClient());
+
+            var job = await app.GetJob();
+            System.Console.WriteLine($"job: title: {job.Title}");
+            System.Console.WriteLine($"job: company: {job.Company}");
         }
     }
 }
