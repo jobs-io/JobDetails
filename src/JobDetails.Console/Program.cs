@@ -21,7 +21,11 @@ namespace JobDetails.Console
             var config = new Config(args);
 
             System.Console.WriteLine(config.JobDetailsPath);
-            System.Console.WriteLine(config.Source);
+            System.Console.WriteLine(config.Source);            
+
+            using(var reader = new StreamReader(config.JobDetailsPath)) {
+                System.Console.WriteLine(reader.ReadToEnd());
+            }
         }
     }
 }
