@@ -23,12 +23,15 @@ namespace JobDetails.Console
         public readonly string JobDetailsPath;
         public readonly string Source;
         public readonly string AppConfigPath;
+        public readonly string Action;
 
         public Config(string[] args)
         {
             this.JobDetailsPath = args[0];
             this.Source = args[1];
             this.AppConfigPath = args[2];
+            if (args.Length > 3) 
+                this.Action = args[3];
         }
     }
 
@@ -61,16 +64,11 @@ namespace JobDetails.Console
         static async Task Main(string[] args)
         {
             var config = new Config(args);
-
             System.Console.WriteLine(config.JobDetailsPath);
             System.Console.WriteLine(config.Source);            
 
-            using(var reader = new StreamReader(config.JobDetailsPath)) {
-                System.Console.WriteLine(reader.ReadToEnd());
-            }
-
             var appConfig = File.ReadAllText(config.AppConfigPath);
-            System.Console.WriteLine(appConfig);
+            System.Console.WriteLine(config.Action);
             var app = new App(new JobDetailsConfig(appConfig.Replace("{source}", config.Source)), new DataStore(config.JobDetailsPath), new HttpClient());
 
             var job = await app.GetJob();
