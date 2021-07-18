@@ -1,12 +1,14 @@
-﻿using System;
-using JobDetails;
+﻿// using System;
+// using JobDetails;
 using JobDetails.Config;
-using JobDetails.Data;
-using JobDetails.Core;
+// using JobDetails.Data;
+// using JobDetails.Core;
 using System.IO;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using JobDetails.Console.Data;
+using JobDetails.Console.Core;
 
 namespace JobDetails.Console
 {
@@ -15,7 +17,7 @@ namespace JobDetails.Console
     {
         static async Task Main(string[] args)
         {
-            var config = new Config(args);
+            var config = new JobDetails.Console.Core.Config(args);
             if (config.Action == "list") {
                 var data = JsonConvert.DeserializeObject<IDictionary<string, string>>(File.ReadAllText(config.JobDetailsPath));
                 foreach (var key in data.Keys)

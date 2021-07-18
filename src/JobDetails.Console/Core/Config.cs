@@ -1,4 +1,4 @@
-namespace JobDetails.Console
+namespace JobDetails.Console.Core
 {
     public class Config {
         public readonly string JobDetailsPath;

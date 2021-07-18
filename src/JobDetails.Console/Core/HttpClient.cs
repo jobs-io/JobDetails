@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using JobDetails.Core;
 
-namespace JobDetails.Console
+namespace JobDetails.Console.Core
 {
     public class HttpClient : IHttpClient
     {

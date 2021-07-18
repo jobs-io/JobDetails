@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using JobDetails.Data;
 using Newtonsoft.Json;
 
-namespace JobDetails.Console
+namespace JobDetails.Console.Data
 {
     public class DataStore : IDataStore {
         private readonly IDictionary<string, string> JobDetails;
